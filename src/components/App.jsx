@@ -13,6 +13,7 @@ export class App extends Component {
     isLoading: false,
     currentSearch: '',
     page: 1,
+    // totalPages: 0,
     modalOpen: false,
     modalImg: '',
     modalAlt: '',
@@ -31,6 +32,7 @@ export class App extends Component {
       isLoading: false,
       currentSearch: inputForSearch.value,
       page: 1,
+      // totalPages: Math.floor(this.state.images.totalHits / 12),
     });
   };
 
@@ -90,7 +92,7 @@ export class App extends Component {
               onImageClick={this.handleImageClick}
               images={this.state.images}
             />
-            {this.state.images.length > 0 ? (
+            {this.state.images.length >= 12 ? (
               <Button onClick={this.handleClickMore} />
             ) : null}
           </React.Fragment>
