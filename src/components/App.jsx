@@ -1,35 +1,75 @@
 import { Component } from 'react';
 import React from 'react';
-import { Searchbar } from './Searchbar/Searchbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
+import { Searchbar } from './Searchbar/Searchbar';
+import { fetchImages } from './API/fetchImages';
+import { Button } from './Button/Button';
+import { Loader } from './Loader/Loader';
+import { Modal } from './Modal/Modal';
 
 export class App extends Component {
   state = {
-    image: null,
-    loading: false,
+    images: [],
+    isLoading: false,
+    currentSearch: '',
+    page: 1,
+    modalOpen: false,
+    modalImg: '',
+    modalAlt: '',
   };
 
-  componentDidMount() {
-    this.setState({ loading: true });
-    fetch(
-      'https://pixabay.com/api/?q=cat&page=1&key=34890588-9da305e6d5e870774c8e66624&image_type=photo&orientation=horizontal&per_page=12'
-    )
-      .then(res => res.json())
-      .then(image => this.setState({ image }))
-      .finally(() => this.setState({ loading: false }));
-  }
-
-  result = () => {
-    this.state.image.hits.map(({ webformatURL, largeImageURL, tags }) => {
-      return (
-        <ul class="gallery">
-          <li class="gallery-item">
-            <img src={webformatURL} alt={tags} />
-          </li>
-        </ul>
-      );
+  handleSubmit = async e => {
+    e.preventDefault();
+    this.setState({ isLoading: true });
+    const inputForSearch = e.target.elements.inputForSearch;
+    if (inputForSearch.value.trim() === '') {
+      return;
+    }
+    const response = await fetchImages(inputForSearch.value, 1);
+    this.setState({
+      images: response,
+      isLoading: false,
+      currentSearch: inputForSearch.value,
+      page: 1,
     });
   };
+
+  handleClickMore = async () => {
+    const response = await fetchImages(
+      this.state.currentSearch,
+      this.state.page + 1
+    );
+    this.setState({
+      images: [...this.state.images, ...response],
+      page: this.state.page + 1,
+    });
+  };
+
+  handleImageClick = e => {
+    this.setState({
+      modalOpen: true,
+      modalAlt: e.target.alt,
+      modalImg: e.target.name,
+    });
+  };
+
+  handleModalClose = () => {
+    this.setState({
+      modalOpen: false,
+      modalImg: '',
+      modalAlt: '',
+    });
+  };
+
+  handleKeyDown = event => {
+    if (event.code === 'Escape') {
+      this.handleModalClose();
+    }
+  };
+
+  async componentDidMount() {
+    window.addEventListener('keydown', this.handleKeyDown);
+  }
 
   render() {
     return (
@@ -41,9 +81,27 @@ export class App extends Component {
           paddingBottom: '24px',
         }}
       >
-        <Searchbar />
-        {this.state.loading && <h1>Загружаем</h1>}
-        {this.state.image && <ImageGallery images={this.state.image.hits} />}
+        {this.state.isLoading ? (
+          <Loader />
+        ) : (
+          <React.Fragment>
+            <Searchbar onSubmit={this.handleSubmit} />
+            <ImageGallery
+              onImageClick={this.handleImageClick}
+              images={this.state.images}
+            />
+            {this.state.images.length > 0 ? (
+              <Button onClick={this.handleClickMore} />
+            ) : null}
+          </React.Fragment>
+        )}
+        {this.state.modalOpen ? (
+          <Modal
+            src={this.state.modalImg}
+            alt={this.state.modalAlt}
+            handleClose={this.handleModalClose}
+          />
+        ) : null}
       </div>
     );
   }
