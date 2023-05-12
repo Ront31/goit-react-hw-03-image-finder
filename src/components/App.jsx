@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import { Searchbar } from './Searchbar/Searchbar';
-import { fetchImages } from './API/fetchImages';
+import { fetchImages } from './api/fetchImages';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Button } from './Button/Button';
 import { Loader } from './Loader/Loader';
@@ -12,7 +12,7 @@ export class App extends Component {
     images: [],
     isLoading: false,
     currentSearch: '',
-    pageNr: 1,
+    page: 1,
     modalOpen: false,
     modalImg: '',
     modalAlt: '',
@@ -30,18 +30,18 @@ export class App extends Component {
       images: response,
       isLoading: false,
       currentSearch: inputForSearch.value,
-      pageNr: 1,
+      page: 1,
     });
   };
 
   handleClickMore = async () => {
     const response = await fetchImages(
       this.state.currentSearch,
-      this.state.pageNr + 1
+      this.state.page + 1
     );
     this.setState({
       images: [...this.state.images, ...response],
-      pageNr: this.state.pageNr + 1,
+      page: this.state.page + 1,
     });
   };
 

@@ -1,14 +1,16 @@
-import { Dna } from 'react-loader-spinner';
+import { Audio } from 'react-loader-spinner';
+// import css from './Loader.module.css';
 
 export const Loader = () => (
   <div>
-    <Dna
-      visible={true}
+    <Audio
       height="80"
       width="80"
-      ariaLabel="dna-loading"
-      wrapperStyle={{}}
-      wrapperClass="dna-wrapper"
+      radius="9"
+      color="green"
+      ariaLabel="loading"
+      wrapperStyle
+      wrapperClass
     />
   </div>
 );
