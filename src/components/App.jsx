@@ -1,18 +1,18 @@
 import { Component } from 'react';
-import React from 'react';
-import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Searchbar } from './Searchbar/Searchbar';
 import { fetchImages } from './API/fetchImages';
+import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Button } from './Button/Button';
 import { Loader } from './Loader/Loader';
 import { Modal } from './Modal/Modal';
+import React from 'react';
 
 export class App extends Component {
   state = {
     images: [],
     isLoading: false,
     currentSearch: '',
-    page: 1,
+    pageNr: 1,
     modalOpen: false,
     modalImg: '',
     modalAlt: '',
@@ -30,18 +30,18 @@ export class App extends Component {
       images: response,
       isLoading: false,
       currentSearch: inputForSearch.value,
-      page: 1,
+      pageNr: 1,
     });
   };
 
   handleClickMore = async () => {
     const response = await fetchImages(
       this.state.currentSearch,
-      this.state.page + 1
+      this.state.pageNr + 1
     );
     this.setState({
       images: [...this.state.images, ...response],
-      page: this.state.page + 1,
+      pageNr: this.state.pageNr + 1,
     });
   };
 
