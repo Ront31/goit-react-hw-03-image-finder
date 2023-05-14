@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import { Searchbar } from './Searchbar/Searchbar';
 import { fetchImages } from './API/fetchImages';
+import { fetchImagesTotal } from './API/fetchImagesTotal';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Button } from './Button/Button';
 import { Loader } from './Loader/Loader';
@@ -13,7 +14,7 @@ export class App extends Component {
     isLoading: false,
     currentSearch: '',
     page: 1,
-    // totalPages: 0,
+    totalPages: 0,
     modalOpen: false,
     modalImg: '',
     modalAlt: '',
@@ -32,7 +33,11 @@ export class App extends Component {
       isLoading: false,
       currentSearch: inputForSearch.value,
       page: 1,
-      // totalPages: Math.floor(this.state.images.totalHits / 12),
+    });
+    const responseTotal = await fetchImagesTotal(inputForSearch.value, 1);
+    console.log(responseTotal);
+    this.setState({
+      totalPages: responseTotal,
     });
   };
 
@@ -92,7 +97,8 @@ export class App extends Component {
               onImageClick={this.handleImageClick}
               images={this.state.images}
             />
-            {this.state.images.length >= 12 ? (
+            {this.state.images.length >= 12 &&
+            this.state.totalPages > this.state.images.length ? (
               <Button onClick={this.handleClickMore} />
             ) : null}
           </React.Fragment>
